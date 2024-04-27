@@ -35,8 +35,10 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      - name: Install Android SDK and Build Tools
+      - name: Install Android SDK
         run: |
+          sudo apt update
+          sudo apt install -y openjdk-11-jdk-headless
           mkdir -p $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
           unzip -qq -d $HOME/android-sdk/cmdline-tools cmdline-tools.zip
@@ -44,7 +46,12 @@ jobs:
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29" "build-tools;29.0.3" "extras;android;m2repository" "extras;google;m2repository" "extras;intel;Hardware_Accelerated_Execution_Manager"
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;29.0.3" "platforms;android-29" "platform-tools" "extras;google;m2repository" "extras;android;m2repository"
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
       - name: Install Cython and Buildozer
         run: |
@@ -52,7 +59,11 @@ jobs:
           python -m pip install cython buildozer
 
       - name: Build with Buildozer
-        run: buildozer android debug
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+          buildozer_version: master
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
