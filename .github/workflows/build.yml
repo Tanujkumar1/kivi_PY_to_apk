@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64  # Use a pre-built Docker container
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -17,26 +20,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.11'  # Specify the Python version you're using
-
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential \
-          git \
-          python3 \
-          python3-dev \
-          ffmpeg \
-          libsdl2-dev \
-          libsdl2-image-dev \
-          libsdl2-mixer-dev \
-          libsdl2-ttf-dev \
-          libportmidi-dev \
-          libswscale-dev \
-          libavformat-dev \
-          libavcodec-dev \
-          zlib1g-dev \
-          aidl  # Install Aidl
 
     - name: Install Buildozer
       run: |
