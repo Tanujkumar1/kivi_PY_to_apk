@@ -44,9 +44,7 @@ jobs:
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29" "build-tools;29.0.3" "extras;android;m2repository"
-          # Accept licenses for build tools if needed
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29" "build-tools;29.0.3" "extras;android;m2repository" "extras;google;m2repository" "extras;intel;Hardware_Accelerated_Execution_Manager"
 
       - name: Install Cython and Buildozer
         run: |
