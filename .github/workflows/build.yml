@@ -3,42 +3,40 @@ name: Build APK
 on:
   push:
     branches:
-       main  
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.11'  # Specify the Python version you're using
+      - name: Install OpenJDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
 
-    - name: Install Cython and Buildozer dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential \
-          git \
-          python3 \
-          python3-dev \
-          ffmpeg \
-          libsdl2-dev \
-          libsdl2-image-dev \
-          libsdl2-mixer-dev \
-          libsdl2-ttf-dev \
-          libportmidi-dev \
-          libswscale-dev \
-          libavformat-dev \
-          libavcodec-dev \
-          zlib1g-dev \
-          aidl  # Install Aidl
-        python -m pip install --upgrade pip
-        python -m pip install cython
-        python -m pip install buildozer
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          sdk-platform: '29'  # Adjust the SDK platform version as needed
+          sdk-build-tools: '29.0.3'  # Adjust the SDK build tools version as needed
 
-    - name: Build APK
-      run: buildozer android debug
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.'  # Specify the Python version you're using
+
+      - name: Install Cython and Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install cython buildozer
+
+      - name: Build APK
+        run: buildozer android debug
