@@ -29,16 +29,15 @@ jobs:
           path: .buildozer
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
 
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-
-      - name: Install Android SDK
+      - name: Install JDK
         run: |
           sudo apt update
           sudo apt install -y openjdk-11-jdk-headless
+          echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+          echo "export PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Set up Android SDK
+        run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
           unzip -qq -d $HOME/android-sdk/cmdline-tools cmdline-tools.zip
@@ -59,11 +58,7 @@ jobs:
           python -m pip install cython buildozer
 
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: master
+        run: buildozer android debug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
