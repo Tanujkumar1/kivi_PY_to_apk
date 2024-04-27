@@ -1,26 +1,47 @@
-name: Build
+name: Build APK
+
 on:
   push:
+    branches:
+      main
 
 jobs:
-# Build job. Builds app for Android with Buildozer
-build-android:
-  name: Build for Android
-  runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout
+    steps:
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Build with Buildozer
-      uses: ArtemSBulgakov/buildozer-action@v1
-      id: buildozer
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        workdir: <specify the directory of the app no don't mention this the app files are in root directory>
-        buildozer_version: stable
+        python-version: '3.x'  # Specify the Python version you're using
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: package
-        path: ${{ steps.buildozer.outputs.RTDpwnload }}
+    - name: Install Buildozer dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          python3-pip \
+          build-essential \
+          git \
+          python3 \
+          python3-dev \
+          ffmpeg \
+          libsdl2-dev \
+          libsdl2-image-dev \
+          libsdl2-mixer-dev \
+          libsdl2-ttf-dev \
+          libportmidi-dev \
+          libswscale-dev \
+          libavformat-dev \
+          libavcodec-dev \
+          zlib1g-dev
+
+    - name: Install Buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer
+
+    - name: Build APK
+      run: buildozer android debug
